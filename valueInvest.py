@@ -190,4 +190,10 @@ for row in rv_dataframe.index:
     for metric in metrics.keys():
         value_percentiles.append(rv_dataframe.loc[row, metrics[metric]])
     rv_dataframe.loc[row, 'RV Score'] = mean(value_percentiles)
+#print(rv_dataframe)
+
+# selecting 50 best value stocks
+rv_dataframe.sort_values('RV Score', ascending = True, inplace = True)
+rv_dataframe = rv_dataframe[:50]
+rv_dataframe.reset_index(drop = True, inplace = True)
 print(rv_dataframe)
