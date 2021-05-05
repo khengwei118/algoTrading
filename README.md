@@ -4,7 +4,7 @@
 This is not investment advice. This program is for entertainment purposes only.
 
 ## Description
-This program selects the best value stocks from the S&P 500 index based on a calculation of
+This program selects the best "value" stocks from the S&P 500 index based on a calculation of
 - Price-to-Earnings (PE) ratio
 - Price-to-Book (PB) ratio
 - Price-to-Sales (PS) ratio
