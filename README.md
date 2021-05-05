@@ -9,7 +9,7 @@ This program selects the best value stocks from the S&P 500 index based on a cal
 - Enterprise Value over Gross Profit
 
 ## Usage
-Run valueInvest.py with the command "python valueInvest.py".
-This program requires Python 3+
-This program will prompt users for their portfolio value, and recommend number of shares for each Ticker based on the portfolio value.
-The number of Tickers recommended can be changed as well.
+Run valueInvest.py with the command "python valueInvest.py".  
+This program requires Python 3+.   
+This program will prompt users for their portfolio value, and recommend number of shares for each Ticker based on the portfolio value.  
+The number of Tickers recommended can be changed as well.  
