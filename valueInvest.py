@@ -194,6 +194,7 @@ for row in rv_dataframe.index:
 
 # selecting 50 best value stocks
 rv_dataframe.sort_values('RV Score', ascending = True, inplace = True)
+rv_dataframe = rv_dataframe[rv_dataframe['Price-to-Earnings Ratio'] > 0]
 rv_dataframe = rv_dataframe[:50]
 rv_dataframe.reset_index(drop = True, inplace = True)
 #print(rv_dataframe)
