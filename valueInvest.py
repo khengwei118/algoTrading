@@ -13,8 +13,11 @@ output_to_console = False
 output_to_excel = True
 number_of_stocks = 30
 
+# excel parameters
 background_color = '#ffffff'
 font_color = '#000000'
+column_width_pixels = 20
+excel_output_name = 'value_stocks'
 
 # batch call
 def chunks(lst, n):
@@ -42,6 +45,7 @@ def portfolio_input():
 # dataframe using robust value
 rv_columns = [
     'Ticker',
+    'Company Name',
     'Price',
     'Number of Shares to Buy',
     'Price-to-Earnings Ratio',
@@ -81,6 +85,7 @@ for symbol_string in symbol_strings:
             pd.Series(
                 [
                     symbol,
+                    data[symbol]['quote']['companyName'],
                     data[symbol]['quote']['latestPrice'],
                     'N/A',
                     data[symbol]['quote']['peRatio'],
@@ -142,7 +147,7 @@ if output_to_console:
     print(rv_dataframe)
 
 # excel output
-writer = pd.ExcelWriter('value_strategy.xlsx', engine = 'xlsxwriter')
+writer = pd.ExcelWriter(excel_output_name+'.xlsx', engine = 'xlsxwriter')
 rv_dataframe.to_excel(writer, sheet_name = "Value Strategy", index = False)
 
 string_template = writer.book.add_format(
@@ -190,23 +195,24 @@ percent_template = writer.book.add_format(
     )
 
 column_formats = {
-                     'A': ['Ticker', string_template],
-                     'B': ['Price', dollar_template],
-                     'C': ['Number of Shares to Buy', integer_template],
-                     'D': ['Price-to-Earnings Ratio', float_template],
-                     'E': ['PE Percentile', percent_template],
-                     'F': ['Price-to-Book Ratio', float_template],
-                     'G': ['PB Percentile', percent_template],
-                     'H': ['Price-to-Sales Ratio', float_template],
-                     'I': ['PS Percentile', percent_template],
-                     'J': ['EV/EBITDA', float_template],
-                     'K': ['EV/EBITDA Percentile', percent_template],
-                     'L': ['EV/GP', float_template],
-                     'M': ['EV/GP Percentile', percent_template],
-                     'N': ['RV Score', percent_template]
+                    'A': ['Ticker', string_template],
+                    'B': ['Company Name', string_template],
+                    'C': ['Price', dollar_template],
+                    'D': ['Number of Shares to Buy', integer_template],
+                    'E': ['Price-to-Earnings Ratio', float_template],
+                    'F': ['PE Percentile', percent_template],
+                    'G': ['Price-to-Book Ratio', float_template],
+                    'H': ['PB Percentile', percent_template],
+                    'I': ['Price-to-Sales Ratio', float_template],
+                    'J': ['PS Percentile', percent_template],
+                    'K': ['EV/EBITDA', float_template],
+                    'L': ['EV/EBITDA Percentile', percent_template],
+                    'M': ['EV/GP', float_template],
+                    'N': ['EV/GP Percentile', percent_template],
+                    'O': ['RV Score', percent_template]
                   }
 for column in column_formats.keys():
-    writer.sheets['Value Strategy'].set_column(f'{column}:{column}', 25, column_formats[column][1])
+    writer.sheets['Value Strategy'].set_column(f'{column}:{column}', column_width_pixels, column_formats[column][1])
     writer.sheets['Value Strategy'].write(f'{column}1', column_formats[column][0], column_formats[column][1])
 if output_to_excel:
     writer.save()
