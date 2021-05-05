@@ -25,3 +25,5 @@ This program requires Python 3+.
 - Users can choose column width for the output spreadsheet.
 - Users can choose background and font color of the spreadsheet.
 
+## Screenshots
+<img src="screenshot_50stocks.png" width="2000" height="750">
