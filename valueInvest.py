@@ -11,12 +11,12 @@ stocks = pd.read_csv('sp_500_stocks.csv')
 
 output_to_console = False
 output_to_excel = True
-number_of_stocks = 30
+number_of_stocks = 50
 
 # excel parameters
 background_color = '#ffffff'
 font_color = '#000000'
-column_width_pixels = 20
+column_width_pixels = 18
 excel_output_name = 'value_stocks'
 
 # batch call
