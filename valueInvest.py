@@ -168,3 +168,16 @@ for symbol_string in symbol_strings:
 for column in ['Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Price-to-Sales Ratio', 'EV/EBITDA', 'EV/GP']:
     rv_dataframe[column].fillna(rv_dataframe[column].mean(), inplace = True)
 print(rv_dataframe[rv_dataframe.isnull().any(axis=1)])
+
+# calculating value percentiles
+from scipy.stats import percentileofscore as score
+metrics = {'Price-to-Earnings Ratio': 'PE Percentile',
+'Price-to-Book Ratio': 'PB Percentile',
+'Price-to-Sales Ratio': 'PS Percentile',
+'EV/EBITDA': 'EV/EBITDA Percentile',
+'EV/GP': 'EV/GP Percentile'}
+
+for metric in metrics.keys():
+    for row in rv_dataframe.index:
+        rv_dataframe.loc[row, metrics[metric]] = score(rv_dataframe[metric], rv_dataframe.loc[row, metric])
+print(rv_dataframe)
