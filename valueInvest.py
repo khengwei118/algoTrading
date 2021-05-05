@@ -74,31 +74,31 @@ def portfolio_input():
 symbol = 'AAPL'
 batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol}&types=quote,advanced-stats&token={IEX_CLOUD_API_TOKEN}'
 data = requests.get(batch_api_call_url).json()
-print(data['AAPL']['advanced-stats'])
+#print(data['AAPL']['advanced-stats'])
 #Price-to-earnings ratio
 pe_ratio = data[symbol]['quote']['peRatio']
 
 #Price-to-book ratio
 pb_ratio = data[symbol]['advanced-stats']['priceToBook']
-print(pb_ratio)
+#print(pb_ratio)
 
 #Price-to-sales ratio
 ps_ratio = data[symbol]['advanced-stats']['priceToSales']
-print(ps_ratio)
+#print(ps_ratio)
 
 #Enterprise Value divided by Earnings Before Interest, Taxes, Depreciation, and Amortization (EV/EBITDA)
 enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
 ebitda = data[symbol]['advanced-stats']['EBITDA']
 ev_to_ebitda = enterprise_value / ebitda
-print(ev_to_ebitda)
+#print(ev_to_ebitda)
 
 #Enterprise Value divided by Gross Profit (EV/GP)
 gross_profit = data[symbol]['advanced-stats']['grossProfit']
 ev_to_gross_profit = enterprise_value / gross_profit
-print(ev_to_gross_profit)
+#print(ev_to_gross_profit)
 
 # dataframe using robust value
-rv_columns = {
+rv_columns = [
     'Ticker',
     'Price',
     'Number of Shares to Buy',
@@ -113,12 +113,58 @@ rv_columns = {
     'EV/GP',
     'EV/GP Percentile',
     'RV Score'
-}
+]
 
 rv_dataframe = pd.DataFrame(columns = rv_columns)
 print(rv_dataframe)
 
 for symbol_string in symbol_strings:
     batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=quote,advanced-stats&token={IEX_CLOUD_API_TOKEN}'
-    data = requests.get(batch_api_call_url)
-    print(data.status_code)
+    data = requests.get(batch_api_call_url).json()
+    for symbol in symbol_string.split(','):
+        enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
+        ebitda = data[symbol]['advanced-stats']['EBITDA']
+        gross_profit = data[symbol]['advanced-stats']['grossProfit']
+
+        try:
+            ev_to_ebitda = enterprise_value / ebitda
+        except TypeError:
+            ev_to_ebitda = np.NaN
+
+        try:
+            ev_to_gross_profit = enterprise_value / gross_profit
+        except TypeError:
+            ev_to_gross_profit = np.NaN
+
+        rv_dataframe = rv_dataframe.append(
+            pd.Series(
+                [
+                    symbol,
+                    data[symbol]['quote']['latestPrice'],
+                    'N/A',
+                    data[symbol]['quote']['peRatio'],
+                    'N/A',
+                    data[symbol]['advanced-stats']['priceToBook'],
+                    'N/A',
+                    data[symbol]['advanced-stats']['priceToSales'],
+                    'N/A',
+                    ev_to_ebitda,
+                    'N/A',
+                    ev_to_gross_profit,
+                    'N/A',
+                    'N/A'
+                ],
+                index = rv_columns
+            ),
+            ignore_index = True
+        )
+
+#print(rv_dataframe)
+
+# missing values
+#print(rv_dataframe[rv_dataframe.isnull().any(axis=1)])
+#print(rv_dataframe.columns)
+
+for column in ['Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Price-to-Sales Ratio', 'EV/EBITDA', 'EV/GP']:
+    rv_dataframe[column].fillna(rv_dataframe[column].mean(), inplace = True)
+print(rv_dataframe[rv_dataframe.isnull().any(axis=1)])
