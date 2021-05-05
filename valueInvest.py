@@ -196,4 +196,11 @@ for row in rv_dataframe.index:
 rv_dataframe.sort_values('RV Score', ascending = True, inplace = True)
 rv_dataframe = rv_dataframe[:50]
 rv_dataframe.reset_index(drop = True, inplace = True)
-print(rv_dataframe)
+#print(rv_dataframe)
+
+# calculating number of shares to buy
+portfolio_input()
+position_size = float(portfolio_size) / len(rv_dataframe.index)
+for row in rv_dataframe.index:
+    rv_dataframe.loc[row, 'Number of Shares to Buy'] = math.floor(position_size / rv_dataframe.loc[row, 'Price'])
+#print(rv_dataframe)
