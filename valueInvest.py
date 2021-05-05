@@ -52,4 +52,21 @@ final_dataframe = final_dataframe[final_dataframe['Price-to-Earnings Ratio'] > 0
 final_dataframe = final_dataframe[:50]
 final_dataframe.reset_index(inplace = True)
 final_dataframe.drop('index', axis = 1, inplace = True)
+#print(final_dataframe)
+
+# calculating number of shares to buy
+def portfolio_input():
+    global portfolio_size
+    portfolio_size = input("Enter the value of your portfolio:")
+
+    try:
+        val = float(portfolio_size)
+    except ValueError:
+        print("That's not a number! \n Try again:")
+        portfolio_size = input("Enter the value of your portfolio:")
+
+portfolio_input()
+position_size = float(portfolio_size)/len(final_dataframe.index)
+for row in final_dataframe.index:
+    final_dataframe.loc[row, 'Number of Shares to Buy'] = math.floor(position_size/final_dataframe.loc[row, 'Price'])
 print(final_dataframe)
