@@ -21,4 +21,7 @@ This program requires Python 3+.
 - Users enter portfolio value and program will adjust number of shares per ticker.
 - The number of Tickers recommended can be changed.
 - Users can output to Excel, output to Console, or both. 
+- Users can input name of output spreadsheet.
+- Users can choose column width for the output spreadsheet.
+- Users can choose background and font color of the spreadsheet.
 
