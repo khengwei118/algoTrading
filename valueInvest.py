@@ -180,4 +180,14 @@ metrics = {'Price-to-Earnings Ratio': 'PE Percentile',
 for metric in metrics.keys():
     for row in rv_dataframe.index:
         rv_dataframe.loc[row, metrics[metric]] = score(rv_dataframe[metric], rv_dataframe.loc[row, metric])
+#print(rv_dataframe)
+
+# calculating RV score
+from statistics import mean
+
+for row in rv_dataframe.index:
+    value_percentiles = []
+    for metric in metrics.keys():
+        value_percentiles.append(rv_dataframe.loc[row, metrics[metric]])
+    rv_dataframe.loc[row, 'RV Score'] = mean(value_percentiles)
 print(rv_dataframe)
