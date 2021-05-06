@@ -47,12 +47,12 @@ rv_columns = [
     'Ticker',
     'Company Name',
     'Price',
-    'Number of Shares to Buy',
-    'Price-to-Earnings Ratio',
+    'Num. Shares to Buy',
+    'PE Ratio',
     'PE Percentile',
-    'Price-to-Book Ratio',
+    'PB Ratio',
     'PB Percentile',
-    'Price-to-Sales Ratio',
+    'PS Ratio',
     'PS Percentile',
     'EV/EBITDA',
     'EV/EBITDA Percentile',
@@ -108,14 +108,14 @@ for symbol_string in symbol_strings:
 
 # missing values
 
-for column in ['Price-to-Earnings Ratio', 'Price-to-Book Ratio', 'Price-to-Sales Ratio', 'EV/EBITDA', 'EV/GP']:
+for column in ['PE Ratio', 'PB Ratio', 'PS Ratio', 'EV/EBITDA', 'EV/GP']:
     rv_dataframe[column].fillna(rv_dataframe[column].mean(), inplace = True)
 
 # calculating value percentiles
 from scipy.stats import percentileofscore as score
-metrics = {'Price-to-Earnings Ratio': 'PE Percentile',
-            'Price-to-Book Ratio': 'PB Percentile',
-            'Price-to-Sales Ratio': 'PS Percentile',
+metrics = {'PE Ratio': 'PE Percentile',
+            'PB Ratio': 'PB Percentile',
+            'PS Ratio': 'PS Percentile',
             'EV/EBITDA': 'EV/EBITDA Percentile',
             'EV/GP': 'EV/GP Percentile'
            }
@@ -134,7 +134,7 @@ for row in rv_dataframe.index:
 
 # selecting 50 best value stocks
 rv_dataframe.sort_values('RV Score', ascending = True, inplace = True)
-rv_dataframe = rv_dataframe[rv_dataframe['Price-to-Earnings Ratio'] > 0]
+rv_dataframe = rv_dataframe[rv_dataframe['PE Ratio'] > 0]
 rv_dataframe = rv_dataframe[:number_of_stocks]
 rv_dataframe.reset_index(drop = True, inplace = True)
 
@@ -142,7 +142,7 @@ rv_dataframe.reset_index(drop = True, inplace = True)
 portfolio_input()
 position_size = float(portfolio_size) / len(rv_dataframe.index)
 for row in rv_dataframe.index:
-    rv_dataframe.loc[row, 'Number of Shares to Buy'] = math.floor(position_size / rv_dataframe.loc[row, 'Price'])
+    rv_dataframe.loc[row, 'Num. Shares to Buy'] = math.floor(position_size / rv_dataframe.loc[row, 'Price'])
 if output_to_console:
     print(rv_dataframe)
 
@@ -198,12 +198,12 @@ column_formats = {
                     'A': ['Ticker', string_template],
                     'B': ['Company Name', string_template],
                     'C': ['Price', dollar_template],
-                    'D': ['Number of Shares to Buy', integer_template],
-                    'E': ['Price-to-Earnings Ratio', float_template],
+                    'D': ['Num. Shares to Buy', integer_template],
+                    'E': ['PE Ratio', float_template],
                     'F': ['PE Percentile', percent_template],
-                    'G': ['Price-to-Book Ratio', float_template],
+                    'G': ['PB Ratio', float_template],
                     'H': ['PB Percentile', percent_template],
-                    'I': ['Price-to-Sales Ratio', float_template],
+                    'I': ['PS Ratio', float_template],
                     'J': ['PS Percentile', percent_template],
                     'K': ['EV/EBITDA', float_template],
                     'L': ['EV/EBITDA Percentile', percent_template],
