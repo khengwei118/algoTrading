@@ -11,7 +11,7 @@ stocks = pd.read_csv('sp_500_stocks.csv')
 
 output_to_console = False
 output_to_excel = True
-number_of_stocks = 50
+number_of_stocks = 20
 
 # excel parameters
 background_color = '#ffffff'
