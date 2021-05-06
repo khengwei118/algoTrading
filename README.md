@@ -6,6 +6,7 @@ This is not investment advice. This program is for entertainment purposes only.
 ## Description
 This program selects the best "value" stocks from the S&P 500 index based the following metrics to calculate a "robust value" score:
 - Price-to-Earnings (P/E) ratio
+- Forward P/E ratio
 - Price-to-Book (P/B) ratio
 - Price-to-Sales (P/S) ratio
 - Debt-to-Equity (D/E) ratio
@@ -13,7 +14,7 @@ This program selects the best "value" stocks from the S&P 500 index based the fo
 - Enterprise Value over EBITDA (EV/EBITDA) 
 - Enterprise Value over Gross Profit (EV/GP)
 
-Stocks with negative P/E and D/E ratios are removed from the recommendations.
+Stocks with negative P/E, negative forward P/E, negative P/B, or negative D/E ratios are removed from the recommendations.
 
 ## Usage
 Run valueInvest.py with the command "python valueInvest.py".  
@@ -30,4 +31,6 @@ This program requires Python 3+.
 - Users can choose background and font color of the spreadsheet.
 
 ## Screenshots
-<img src="screenshot_50stocks.png" width="2000" height="750">
+<img src="screenshots/screenshot_1.png" width="1200" height="300">
+<img src="screenshots/screenshot_2.png" width="1200" height="300">   
+
