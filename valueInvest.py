@@ -16,7 +16,7 @@ number_of_stocks = 50
 # excel parameters
 background_color = '#ffffff'
 font_color = '#000000'
-column_width_pixels = 18
+column_width_pixels = 15
 excel_output_name = 'value_stocks'
 
 # batch call
@@ -48,12 +48,16 @@ rv_columns = [
     'Company Name',
     'Price',
     'Num. Shares to Buy',
-    'PE Ratio',
-    'PE Percentile',
-    'PB Ratio',
-    'PB Percentile',
-    'PS Ratio',
-    'PS Percentile',
+    'P/E Ratio',
+    'P/E Percentile',
+    'P/B Ratio',
+    'P/B Percentile',
+    'P/S Ratio',
+    'P/S Percentile',
+    'Debt/Equity Ratio',
+    'D/E Percentile',
+    'PEG',
+    'PEG Percentile',
     'EV/EBITDA',
     'EV/EBITDA Percentile',
     'EV/GP',
@@ -94,6 +98,10 @@ for symbol_string in symbol_strings:
                     'N/A',
                     data[symbol]['advanced-stats']['priceToSales'],
                     'N/A',
+                    data[symbol]['advanced-stats']['pegRatio'],
+                    'N/A',
+                    data[symbol]['advanced-stats']['priceToSales'],
+                    'N/A',
                     ev_to_ebitda,
                     'N/A',
                     ev_to_gross_profit,
@@ -108,14 +116,16 @@ for symbol_string in symbol_strings:
 
 # missing values
 
-for column in ['PE Ratio', 'PB Ratio', 'PS Ratio', 'EV/EBITDA', 'EV/GP']:
+for column in ['P/E Ratio', 'P/B Ratio', 'P/S Ratio', 'Debt/Equity Ratio', 'PEG', 'EV/EBITDA', 'EV/GP']:
     rv_dataframe[column].fillna(rv_dataframe[column].mean(), inplace = True)
 
 # calculating value percentiles
 from scipy.stats import percentileofscore as score
-metrics = {'PE Ratio': 'PE Percentile',
-            'PB Ratio': 'PB Percentile',
-            'PS Ratio': 'PS Percentile',
+metrics = {'P/E Ratio': 'P/E Percentile',
+            'P/B Ratio': 'P/B Percentile',
+            'P/S Ratio': 'P/S Percentile',
+            'Debt/Equity Ratio': 'D/E Percentile',
+            'PEG': 'PEG Percentile',
             'EV/EBITDA': 'EV/EBITDA Percentile',
             'EV/GP': 'EV/GP Percentile'
            }
@@ -134,7 +144,8 @@ for row in rv_dataframe.index:
 
 # selecting 50 best value stocks
 rv_dataframe.sort_values('RV Score', ascending = True, inplace = True)
-rv_dataframe = rv_dataframe[rv_dataframe['PE Ratio'] > 0]
+rv_dataframe = rv_dataframe[rv_dataframe['P/E Ratio'] > 0]
+rv_dataframe = rv_dataframe[rv_dataframe['Debt/Equity Ratio'] > 0]
 rv_dataframe = rv_dataframe[:number_of_stocks]
 rv_dataframe.reset_index(drop = True, inplace = True)
 
@@ -199,17 +210,21 @@ column_formats = {
                     'B': ['Company Name', string_template],
                     'C': ['Price', dollar_template],
                     'D': ['Num. Shares to Buy', integer_template],
-                    'E': ['PE Ratio', float_template],
-                    'F': ['PE Percentile', percent_template],
-                    'G': ['PB Ratio', float_template],
-                    'H': ['PB Percentile', percent_template],
-                    'I': ['PS Ratio', float_template],
-                    'J': ['PS Percentile', percent_template],
-                    'K': ['EV/EBITDA', float_template],
-                    'L': ['EV/EBITDA Percentile', percent_template],
-                    'M': ['EV/GP', float_template],
-                    'N': ['EV/GP Percentile', percent_template],
-                    'O': ['RV Score', percent_template]
+                    'E': ['P/E Ratio', float_template],
+                    'F': ['P/E Percentile', percent_template],
+                    'G': ['P/B Ratio', float_template],
+                    'H': ['P/B Percentile', percent_template],
+                    'I': ['P/S Ratio', float_template],
+                    'J': ['P/S Percentile', percent_template],
+                    'K': ['Debt/Equity Ratio', float_template],
+                    'L': ['D/E Percentile', percent_template],
+                    'M': ['PEG', float_template],
+                    'N': ['PEG Percentile', percent_template],
+                    'O': ['EV/EBITDA', float_template],
+                    'P': ['EV/EBITDA Percentile', percent_template],
+                    'Q': ['EV/GP', float_template],
+                    'R': ['EV/GP Percentile', percent_template],
+                    'S': ['RV Score', percent_template]
                   }
 for column in column_formats.keys():
     writer.sheets['Value Strategy'].set_column(f'{column}:{column}', column_width_pixels, column_formats[column][1])
