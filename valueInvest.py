@@ -46,6 +46,7 @@ def portfolio_input():
 rv_columns = [
     'Ticker',
     'Company Name',
+    #'Sector'
     'Price',
     'Num. Shares to Buy',
     'P/E Ratio',
@@ -70,12 +71,14 @@ rv_columns = [
 rv_dataframe = pd.DataFrame(columns = rv_columns)
 
 for symbol_string in symbol_strings:
-    batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=quote,advanced-stats&token={IEX_CLOUD_API_TOKEN}'
+    batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=quote,company,advanced-stats&token={IEX_CLOUD_API_TOKEN}'
     data = requests.get(batch_api_call_url).json()
+
     for symbol in symbol_string.split(','):
         enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
         ebitda = data[symbol]['advanced-stats']['EBITDA']
         gross_profit = data[symbol]['advanced-stats']['grossProfit']
+
         try:
             ev_to_ebitda = enterprise_value / ebitda
         except TypeError:
@@ -91,6 +94,7 @@ for symbol_string in symbol_strings:
                 [
                     symbol,
                     data[symbol]['quote']['companyName'],
+                    #data[symbol]['company']['sector'],
                     data[symbol]['quote']['latestPrice'],
                     'N/A',
                     data[symbol]['quote']['peRatio'],
@@ -139,7 +143,6 @@ for metric in metrics.keys():
         rv_dataframe.loc[row, metrics[metric]] = score(rv_dataframe[metric], rv_dataframe.loc[row, metric])/100
 
 # calculating RV score
-
 for row in rv_dataframe.index:
     value_percentiles = []
     for metric in metrics.keys():
@@ -214,6 +217,7 @@ percent_template = writer.book.add_format(
 column_formats = {
                     'A': ['Ticker', string_template],
                     'B': ['Company Name', string_template],
+                   # 'C': ['Sector', string_template],
                     'C': ['Price', dollar_template],
                     'D': ['Num. Shares to Buy', integer_template],
                     'E': ['P/E Ratio', float_template],
