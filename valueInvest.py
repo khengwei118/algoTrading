@@ -65,6 +65,8 @@ rv_columns = [
     'EV/EBITDA Percentile',
     'EV/GP',
     'EV/GP Percentile',
+    'Put/Call Ratio',
+    'Put/Call Percentile',
     'RV Score'
 ]
 
@@ -73,7 +75,7 @@ rv_dataframe = pd.DataFrame(columns = rv_columns)
 for symbol_string in symbol_strings:
     batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=quote,company,advanced-stats&token={IEX_CLOUD_API_TOKEN}'
     data = requests.get(batch_api_call_url).json()
-
+    #print(data['AAPL']['advanced-stats']['putCallRatio'])
     for symbol in symbol_string.split(','):
         enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
         ebitda = data[symbol]['advanced-stats']['EBITDA']
@@ -113,6 +115,8 @@ for symbol_string in symbol_strings:
                     'N/A',
                     ev_to_gross_profit,
                     'N/A',
+                    data[symbol]['advanced-stats']['putCallRatio'],
+                    'N/A',
                     'N/A'
                 ],
                 index = rv_columns
@@ -123,7 +127,7 @@ for symbol_string in symbol_strings:
 
 # missing values
 
-for column in ['P/E Ratio', 'Forward P/E Ratio','P/B Ratio', 'P/S Ratio', 'Debt/Equity Ratio', 'PEG', 'EV/EBITDA', 'EV/GP']:
+for column in ['P/E Ratio', 'Forward P/E Ratio','P/B Ratio', 'P/S Ratio', 'Debt/Equity Ratio', 'PEG', 'EV/EBITDA', 'EV/GP', 'Put/Call Ratio']:
     rv_dataframe[column].fillna(rv_dataframe[column].mean(), inplace = True)
 
 # calculating value percentiles
@@ -135,7 +139,8 @@ metrics = {'P/E Ratio': 'P/E Percentile',
             'Debt/Equity Ratio': 'D/E Percentile',
             'PEG': 'PEG Percentile',
             'EV/EBITDA': 'EV/EBITDA Percentile',
-            'EV/GP': 'EV/GP Percentile'
+            'EV/GP': 'EV/GP Percentile',
+            'Put/Call Ratio': 'Put/Call Percentile'
            }
 
 for metric in metrics.keys():
@@ -153,6 +158,7 @@ for row in rv_dataframe.index:
 rv_dataframe.sort_values('RV Score', ascending = True, inplace = True)
 rv_dataframe = rv_dataframe[rv_dataframe['P/E Ratio'] > 0]
 rv_dataframe = rv_dataframe[rv_dataframe['P/B Ratio'] > 0]
+rv_dataframe = rv_dataframe[rv_dataframe['P/E Ratio'] > rv_dataframe['Forward P/E Ratio']]
 rv_dataframe = rv_dataframe[rv_dataframe['Forward P/E Ratio'] > 0]
 rv_dataframe = rv_dataframe[rv_dataframe['Debt/Equity Ratio'] > 0]
 rv_dataframe = rv_dataframe[:number_of_stocks]
@@ -236,7 +242,9 @@ column_formats = {
                     'R': ['EV/EBITDA Percentile', percent_template],
                     'S': ['EV/GP', float_template],
                     'T': ['EV/GP Percentile', percent_template],
-                    'U': ['RV Score', percent_template]
+                    'U': ['Put/Call Ratio', float_template],
+                    'V': ['Put/Call Percentile', percent_template],
+                    'W': ['RV Score', percent_template]
                   }
 for column in column_formats.keys():
     writer.sheets['Value Strategy'].set_column(f'{column}:{column}', column_width_pixels, column_formats[column][1])
